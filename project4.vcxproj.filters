@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CudaCompile Include="src\baseline.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\bitfield.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\bitmatrix.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\common.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\host_device_vector.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\randkernel.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
+    <CudaCompile Include="tests\test_bitfield.cu">
+      <Filter>tests</Filter>
+    </CudaCompile>
+    <CudaCompile Include="tests\test_bitmatrix.cu">
+      <Filter>tests</Filter>
+    </CudaCompile>
+    <CudaCompile Include="tests\test_host_device_vector.cu">
+      <Filter>tests</Filter>
+    </CudaCompile>
+    <CudaCompile Include="tests\test_main.cu">
+      <Filter>tests</Filter>
+    </CudaCompile>
+    <CudaCompile Include="tests\test_randkernel.cu">
+      <Filter>tests</Filter>
+    </CudaCompile>
+    <CudaCompile Include="tests\test_span.cu">
+      <Filter>tests</Filter>
+    </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\host_device_vector.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\log.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\test_baseline.cu">
+      <Filter>tests</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\test_bitfield.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\test_heap.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\test_log.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\test_main.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\test_span.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\test_treap.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
+    <ClCompile Include="tree\tree_base.cpp">
+      <Filter>tree</Filter>
+    </ClCompile>
+    <ClCompile Include="tree\tree_model.cpp">
+      <Filter>tree</Filter>
+    </ClCompile>
+    <ClCompile Include="tree\tree_updater.cpp">
+      <Filter>tree</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\base.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\baseline.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\bitfield.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\bitmatrix.cuh">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\heap.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\host_device_vector.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\log.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\randkernel.cuh">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\span.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\treap.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tree_base.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tree_model.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tree_updater.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{06ebb088-dcc5-4203-8664-835f616352d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tests">
+      <UniqueIdentifier>{78c7d201-ee15-47f0-8213-f547547ec540}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tree">
+      <UniqueIdentifier>{b162ef95-6087-4038-98e5-c8b3919ead13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{54951700-79ba-4ce4-a9c1-28319a5c15d1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

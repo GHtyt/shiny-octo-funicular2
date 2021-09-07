@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{0d0a7566-a377-4dc3-8dbc-1e8542cbde44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{44261216-48d4-4756-b161-f629fbab378d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tests">
+      <UniqueIdentifier>{5d7d4c2f-fe94-4823-af21-73c9202d5848}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tree">
+      <UniqueIdentifier>{be6413bc-32b6-47b4-ac53-064fedbb9c74}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\base.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\bitfield.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\log.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\span.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\host_device_vector.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\bitmatrix.cuh">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\randkernel.cuh">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\heap.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\treap.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\baseline.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tree_base.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tree_model.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tree_updater.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="src\common.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
+    <CudaCompile Include="tests\test_span.cu">
+      <Filter>tests</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\bitfield.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
+    <CudaCompile Include="tests\test_bitfield.cu">
+      <Filter>tests</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\host_device_vector.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
+    <CudaCompile Include="tests\test_host_device_vector.cu">
+      <Filter>tests</Filter>
+    </CudaCompile>
+    <CudaCompile Include="tests\test_main.cu">
+      <Filter>tests</Filter>
+    </CudaCompile>
+    <CudaCompile Include="tests\test_randkernel.cu">
+      <Filter>tests</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\randkernel.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
+    <CudaCompile Include="tests\test_bitmatrix.cu">
+      <Filter>tests</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\bitmatrix.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\baseline.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\log.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\test_main.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\test_span.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\test_bitfield.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
+    <ClCompile Include="src\host_device_vector.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\test_heap.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\test_treap.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\test_log.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\test_baseline.cu">
+      <Filter>tests</Filter>
+    </ClCompile>
+    <ClCompile Include="tree\tree_base.cpp">
+      <Filter>tree</Filter>
+    </ClCompile>
+    <ClCompile Include="tree\tree_model.cpp">
+      <Filter>tree</Filter>
+    </ClCompile>
+    <ClCompile Include="tree\tree_updater.cpp">
+      <Filter>tree</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
