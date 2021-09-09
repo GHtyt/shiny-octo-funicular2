@@ -14,6 +14,9 @@
 #include "treap.h"
 
 
+#include <bitset>
+
+
 
 __global__ void SetKernel(LBitField64 bits, int pos);
 

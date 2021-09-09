@@ -26,8 +26,8 @@ __global__ void mask_kernel(common::Span<uint64_t> data_v, int size, int LineSiz
 	int id = threadIdx.x + blockIdx.x * blockDim.x;
 	if (id < size) {
 		for (int i = 0; i < LineSize; ++i) {
-			data_v[i] &= mask0[i];
-			data_v[i] |= mask1[i];
+			data_v[i + id * LineSize] &= mask0[i];
+			data_v[i + id * LineSize] |= mask1[i];
 
 		}
 
@@ -67,11 +67,13 @@ BitMatrix<LineSize, Connection>::BitMatrix(HostDeviceVector<uint64_t>* _data) : 
 	//HostDeviceVector<uint64_t> lv1(LBitField64::ComputeStorageSize(size), 0);
 	//data = &d1;
 	//label_v = &lv1;
+	LOG(INFO) << size;
 	data = new HostDeviceVector<uint64_t>(size * LineSize, 0);
 	label_v = new HostDeviceVector<uint64_t>(LBitField64::ComputeStorageSize(size), 0);
 	//std::cout << LBitField64::ComputeStorageSize(size) << std::endl;
 	//label_v->Resize(LBitField64::ComputeStorageSize(size));
 	label = LBitField64(label_v->HostSpan());
+	LOG(INFO) << size;
 	data->Copy(*_data);
 };
 
@@ -150,7 +152,10 @@ void BitMatrix<LineSize, Connection>::sampling() {
 template<int32_t LineSize, typename Connection>
 void BitMatrix<LineSize, Connection>::gpuCalLabel() {
 	label = LBitField64(label_v->DeviceSpan());
-	int32_t block = std::ceil(size / CAL_KERNEL_SIZE);
+	int32_t block = std::ceil(size / CAL_KERNEL_SIZE) + 1;
+	//LOG(INFO) << "block: " << block;
+	//LOG(INFO) << "size: " << size;
+	//LOG(INFO) << "size: " << CAL_KERNEL_SIZE;
 	cal_kernel<Connection> << < CAL_KERNEL_SIZE, block >> > (label, size, LineSize, data->ConstDeviceSpan());
 }
 
@@ -182,6 +187,7 @@ void BitMatrix<LineSize, Connection>::cpuCalLabel() {
 #pragma omp parallel for
 	for (int i = 0; i < size; ++i) {
 		int32_t res = Connection::Cal(data_h.subspan(i * LineSize, LineSize));
+		//LOG(IGNORE) << i << " " << res;
 		if (res == 1) {
 			label.cpuSet(i);
 		}
@@ -194,7 +200,7 @@ void BitMatrix<LineSize, Connection>::cpuCalLabel() {
 
 template<int32_t LineSize, typename Connection>
 void BitMatrix<LineSize, Connection>::gpuMask(LBitField64 mask0, LBitField64 mask1) {
-	int32_t block = std::ceil(size / CAL_KERNEL_SIZE);
+	int32_t block = std::ceil(size / CAL_KERNEL_SIZE) + 1;
 	mask_kernel << < CAL_KERNEL_SIZE, block >> > (data->DeviceSpan(), size, LineSize, mask0.Bits(), mask1.Bits());
 }
 

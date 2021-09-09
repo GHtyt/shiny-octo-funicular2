@@ -14,7 +14,7 @@
     <ClInclude Include="include\base.h" />
     <ClInclude Include="include\baseline.h" />
     <ClInclude Include="include\bitfield.h" />
-    <ClInclude Include="include\bitmatrix.cuh" />
+    <CudaCompile Include="include\bitmatrix.cuh" />
     <ClInclude Include="include\common.h" />
     <ClInclude Include="include\host_device_vector.h" />
     <ClInclude Include="include\log.h" />

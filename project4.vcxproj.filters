@@ -37,6 +37,9 @@
     <CudaCompile Include="tests\test_span.cu">
       <Filter>tests</Filter>
     </CudaCompile>
+    <CudaCompile Include="include\bitmatrix.cuh">
+      <Filter>include</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\host_device_vector.cpp">
@@ -84,9 +87,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\bitfield.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\bitmatrix.cuh">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\common.h">

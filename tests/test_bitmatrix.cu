@@ -45,15 +45,15 @@ TEST(BITMATRIX, BASICCONSTRUCTOR)
 }
 
 TEST(BITMATRIX, CPUCal) {
-	
-	std::vector<uint64_t> v{0, 1, 5, 2, 6, 5, 4};
+	std::vector<uint64_t> v{0, 1, 5, 2, 6, 5, 4, 3};
 	HostDeviceVector<uint64_t> v1(v);
 	TestMatrix tm(&v1);
 
-	ASSERT_TRUE(tm.Size(), 7);/**/
+	ASSERT_TRUE(tm.Size(), 8);/**/
+	LOG(DEBUG) << tm.Label().Bits()[0];
 	tm.cpuCalLabel();
 
-	//LOG(DEBUG) << tm.Label().Bits()[0];
+	LOG(DEBUG) << tm.Label().Bits()[0];
 	ASSERT_TRUE(tm.Label().Bits()[0], 36ULL);
 	/*
 	HostDeviceVector<uint64_t>* res = tm.Label_v();
@@ -67,12 +67,12 @@ TEST(BITMATRIX, CPUCal) {
 
 
 TEST(BITMATRIX, GPUCal) {
-
-	std::vector<uint64_t> v{ 0, 1, 5, 2, 6, 5, 4 };
+	
+	std::vector<uint64_t> v{ 0, 1, 5, 2, 6, 5, 4, 3};
 	HostDeviceVector<uint64_t> v1(v);
 	TestMatrix tm(&v1);
 
-	ASSERT_TRUE(tm.Size(), 7);/**/
+	ASSERT_TRUE(tm.Size(), 8);
 	tm.gpuCalLabel();
 
 	ASSERT_TRUE(tm.Label().Bits()[0], 36ULL);
@@ -81,7 +81,7 @@ TEST(BITMATRIX, GPUCal) {
 
 TEST(BITMATRIX, CPUMask) {
 
-	std::vector<uint64_t> v{ 0, 1, 3, 2, 6, 3, 4 };
+	std::vector<uint64_t> v{ 0, 1, 3, 2, 6, 3, 4, 2};
 	HostDeviceVector<uint64_t> v1(v);
 	TestMatrix tm(&v1);
 
@@ -100,7 +100,7 @@ TEST(BITMATRIX, CPUMask) {
 
 TEST(BITMATRIX, GPUMask) {
 
-	std::vector<uint64_t> v{ 0, 1, 3, 2, 6, 3, 4 };
+	std::vector<uint64_t> v{ 0, 1, 3, 2, 6, 3, 4, 2};
 	HostDeviceVector<uint64_t> v1(v);
 	TestMatrix tm(&v1);
 
@@ -118,38 +118,44 @@ TEST(BITMATRIX, GPUMask) {
 	ASSERT_TRUE(tm.Data()->ConstHostSpan()[0], 2ULL);
 }
 
-TEST(BITMATRIX, equal) {
-	TestMatrix* tmbase = new TestMatrix(1);
+TEST(BITMATRIX, Equal) {
+	TestMatrix* tmbase = new TestMatrix(3);
 	tmbase->sampling();
 
 	auto hv = tmbase->Data()->ConstHostVector();
 
 
 		TestMatrix* tm0 = new TestMatrix(tmbase);
-		//std::vector<uint64_t> m0 = nodes[j]->mask1.ConstHostVector();
-		//std::vector<uint64_t> m1 = nodes[j]->mask0.ConstHostVector();
-		//auto m0 = nodes[j]->mask1.ConstDeviceSpan();
-		//auto m1 = nodes[j]->mask0.ConstDeviceSpan();
-		auto ma00 = LBitField64(m0);
-		auto ma01 = LBitField64(m1);
-		tm1->cpuMask(ma0, ma1);
-		tm1->cpuCalLabel();
+		std::vector<uint64_t> mask0_storage(1, 0xffff);
+		std::vector<uint64_t> mask1_storage(1, 0);
+		auto ma00 = LBitField64({ mask0_storage.data(), mask0_storage.size() });
+		auto ma01 = LBitField64({ mask1_storage.data(), mask1_storage.size() });
+		tm0->cpuMask(ma00, ma01);
+		tm0->cpuCalLabel();
 		//tm->gpuMask(ma0, ma1);
 		//tm->gpuCalLabel();
 
 
+		LOG(INFO) << tm0->Data()->ConstHostSpan()[0];
+		LOG(INFO) << tm0->Data()->ConstHostSpan()[1];
+		LOG(INFO) << tm0->Data()->ConstHostSpan()[2];
 		LOG(INFO) << tm0->Label().Bits()[0];
 
 
 		TestMatrix* tm1 = new TestMatrix(tmbase);
-		thrust::device_vector<LBitField64::value_type> m11(1);
-		thrust::device_vector<LBitField64::value_type> m10(1);
-		auto ma10 = LBitField64(m0);
-		auto ma11 = LBitField64(m1);
-		tm1->cpuMask(ma0, ma1);
-		tm1->cpuCalLabel();
+		thrust::device_vector<LBitField64::value_type> m10(1, 0xffff);
+		thrust::device_vector<LBitField64::value_type> m11(1, 0);
+		auto ma10 = LBitField64(common::ToSpan(m10));
+		auto ma11 = LBitField64(common::ToSpan(m11));
+		tm1->gpuMask(ma10, ma11);
+		tm1->gpuCalLabel();
 		//tm->gpuMask(ma0, ma1);
 
 
-		LOG(INFO) << tm1->Label().Bits()[0];
+		LOG(INFO) << tm1->Data()->ConstHostSpan()[0];
+		LOG(INFO) << tm1->Data()->ConstHostSpan()[1];
+		LOG(INFO) << tm1->Data()->ConstHostSpan()[2];
+		LOG(INFO) << tm1->Label_v()->ConstHostSpan()[0];
+		//auto lb = tm1->Label_v();
+		//lb[0];
 }

@@ -15,14 +15,27 @@ __global__ void ClearKernel(LBitField64 bits, int pos) {
 	}
 }
 
+#define CUDA_TEST 1
+
 Node::Node() {
 	son[0] = -1;
 	son[1] = -1;
 
+#if CUDA_TEST
+
 	std::vector<uint64_t> m0{ 0 };
 	std::vector<uint64_t> m1{ 0ULL - 1 };
+
 	mask0 = u64_v(m0);
 	mask1 = u64_v(m1);
+#else
+	thrust::device_vector<uint64_t> m0(1, 0);
+	thrust::device_vector<uint64_t> m1(1, 0ULL - 1);
+	mask0 = u64_v(common::ToSpan(m0));
+	mask1 = u64_v(common::ToSpan(m1));
+
+#endif 
+
 }
 
 
@@ -30,13 +43,25 @@ Node::Node(int bit) {
 	son[0] = -1;
 	son[1] = -1;
 
-	std::vector<uint64_t> m0{ 0 };
+#if CUDA_TEST
+
+
+	std::vector<uint64_t> m0;
 	std::vector<uint64_t> m1;
-	if (bit < 64)
-		m1.push_back((1ULL << bit) - 1 );
-	else
-		m1.push_back(0ULL - 1);
+	while (bit > 0) {
+		if (bit < 64)
+			m1.push_back((1ULL << bit) - 1);
+		else
+			m1.push_back(0ULL - 1);
+		m0.push_back(0);
+		bit -= 64;
+	}
 	//std::vector<uint64_t> m1{ (1ULL<<bit) - 1 };
+#else
+	thrust::device_vector<uint64_t> m0(1, 0);
+	thrust::device_vector<uint64_t> m1(1, 0ULL - 1);
+#endif 
+
 	mask0 = u64_v(m0);
 	mask1 = u64_v(m1);
 }
@@ -111,13 +136,15 @@ void Baseline::build(int BT, std::vector<int> k) {
 	//int BT = 4;
 
 	int cur_start = 0;
-	for (int i = 0; i < BT; ++i) {
+	for (int i = 0; i < BT + 1; ++i) {
 		int end = nodes.size();
 		LOG(DEBUG) << "depth: " << i << " " << cur_start << " " << end;
-		Treap<Func> t;
+		treap::Treap<Func> t;
 		std::vector<uint64_t> v0;
 		std::vector<uint64_t> v1;
-		if (BT <= 4) {
+		int total_bit = 16 * BT;
+		/*
+		if (total_bit <= 4) {
 			v0.push_back(0);
 			v1.push_back((1ULL << 16 * BT) - 1);
 		}
@@ -128,43 +155,85 @@ void Baseline::build(int BT, std::vector<int> k) {
 				v1.push_back((1ULL << 16 * BT) - 1);
 
 			}
-		}
+		}*/
 
+		while (total_bit > 0) {
+			if (total_bit < 64)
+				v1.push_back((1ULL << total_bit) - 1);
+			else
+				v1.push_back(0ULL - 1);
+			v0.push_back(0);
+			total_bit -= 64;
+		}
 		LBitField64 b0({ v0.data(), v0.size() });
 		LBitField64 b1({ v1.data(), v1.size() });
 		Func f0(b0, 0);
 		Func f1(b1, 1);
+		//LOG(SILENT) << "HERE";
+		//LOG(SILENT) << (b0 == b1);
+		//LOG(SILENT) << (b0 < b1);
 		t.insert(f0);
+		//t.print();
 		t.insert(f1);
+		//t.print();
 
 		TestMatrix* tmbase = new TestMatrix(16 * BT);
 		tmbase->sampling();
 
 		auto hv = tmbase->Data()->ConstHostVector();
+		/*
+		std::bitset<8> bset0(tmbase->Data()->ConstHostSpan()[0]);
+		std::bitset<8> bset1(tmbase->Data()->ConstHostSpan()[1]);
+		std::bitset<8> bset2(tmbase->Data()->ConstHostSpan()[2]);
+
+		LOG(INFO) << "base data: ";
+		LOG(INFO) << bset0;
+		LOG(INFO) << bset1;
+		LOG(INFO) << bset2;*/
 
 		for (int j = cur_start; j < end; ++j) {
-			//LOG(DEBUG) << j;
+			//LOG(WARNING) << j;
 
 			TestMatrix *tm = new TestMatrix(tmbase);
+
+
+#define CUDA_TEST1 1
+#if CUDA_TEST1
 			std::vector<uint64_t> m0 = nodes[j]->mask1.ConstHostVector();
 			std::vector<uint64_t> m1 = nodes[j]->mask0.ConstHostVector();
-			//auto m0 = nodes[j]->mask1.ConstDeviceSpan();
-			//auto m1 = nodes[j]->mask0.ConstDeviceSpan();
+#else
+			auto m0 = nodes[j]->mask1.ConstDeviceSpan();
+			auto m1 = nodes[j]->mask0.ConstDeviceSpan();
+#endif
 			auto ma0 = LBitField64(m0);
 			auto ma1 = LBitField64(m1);
+#if CUDA_TEST1
 			tm->cpuMask(ma0, ma1);
 			tm->cpuCalLabel();
-			//tm->gpuMask(ma0, ma1);
-			//tm->gpuCalLabel();
+#else
+			tm->gpuMask(ma0, ma1);
+			tm->cpuCalLabel();
+#endif
+			
+			std::bitset<8> bset0(tm->Data()->ConstHostSpan()[0]);
+			std::bitset<8> bset1(tm->Data()->ConstHostSpan()[1]);
+			std::bitset<8> bset2(tm->Data()->ConstHostSpan()[2]);
 
-
+			/*
+			LOG(INFO) << "tm data: ";
+			LOG(INFO) << bset0;
+			LOG(INFO) << bset1;
+			LOG(INFO) << bset2;
+			LOG(INFO) << "label: " << tm->Label().Bits()[0];
+			*/
 			Func fj(tm->Label(), j);
-			//LOG(INFO) << fj.val.Bits()[0];
-			int id = t.insert(fj);
+
+			//LOG(INFO) << "label: " << fj.val.Bits()[0];
+			treap::TreapNode<Func>* id = t.insert(fj);
 			//LOG(DEBUG) << "here" << nodes[j]->son[0] << nodes[j]->son[1];
 			//LOG(SILENT) << j << " " << id;
 
-			if (id == -1) {
+			if (id == NULL) {
 
 				Node* left = new Node(nodes[j], k[i], 0);
 				Node* right = new Node(nodes[j], k[i], 1);
@@ -172,7 +241,16 @@ void Baseline::build(int BT, std::vector<int> k) {
 				nodes[j]->son[1] = newnodes(right);
 			}
 			else {
-				nodes[j]->val = id + cur_start - 1;
+				int Id = id->val.func;
+				//LOG(INFO) << "id: " << Id;
+				//LOG(INFO) << "cur_start: " << cur_start;
+				nodes[j]->val = Id;
+				/*
+				if (id < 2)
+					nodes[j]->val = id; 
+				else
+					nodes[j]->val = id + cur_start - 1;
+				*/
 			}
 		
 			//delete tm;
@@ -180,6 +258,9 @@ void Baseline::build(int BT, std::vector<int> k) {
 		cur_start = end;
 
 		//t.print();
+		//for (auto i = t.nodes.begin(); i < t.nodes.end(); ++i) {
+		//	LOG(SILENT) << (*i)->val.func;
+		//}
 	}
 
 	//print();

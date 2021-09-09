@@ -13,8 +13,8 @@
 //#include <cmath>
 
 
-#define RAND_KERNEL_SIZE 5
-#define CAL_KERNEL_SIZE 5
+#define RAND_KERNEL_SIZE 1024
+#define CAL_KERNEL_SIZE 1024
 
 __global__ void cal_kernel(LBitField64 label, int size, int LineSize, common::Span<uint64_t> data_v);
 
@@ -74,7 +74,8 @@ struct MultipyPolicy : public BitMatrix<1, MultipyPolicy> {
 		//return ((d >> 32) * (d & 0xffffffff)) & 0x1;
 		//return get(d, 0) ^ get(d, 1) ^ get(d, 2) ^ get(d, 3);
 		//return get(((d >> 32) & 0xfffffffff) * (d & 0xfffffffff), 31);
-		return get(((d >> 32) & 0xfffffffff) * (d & 0xfffffffff), 31);
+		return get(((d >> 4) & 0xf) + (d & 0xf), 4);
+		//return 1;
 
 	}
 };
@@ -86,18 +87,23 @@ struct RiscVPolicy : public BitMatrix<1, RiscVPolicy> {
 	}
 
 	XGBOOST_DEVICE static int32_t Cal(common::Span<uint64_t> span) {
-		uint64_t d = (*span.begin());
+		uint64_t d0 = (*span.begin());
+		uint64_t d1 = (*(span.begin() + 1));
 		//return ((d >> 32) * (d & 0xffffffff)) & 0x1;
 		//return get(d, 0) ^ get(d, 1) ^ get(d, 2) ^ get(d, 3);
 		//return get(((d >> 32) & 0xfffffffff) * (d & 0xfffffffff), 31);
-		return get(((d >> 32) & 0xfffffffff) * (d & 0xfffffffff), 31);
+		//return get(((d >> 32) & 0xfffffffff) * (d & 0xfffffffff), 31);
+		return get(((d0 >> 0) & 0xfffffffff) + (d1 & 0xfffffffff), 32);
 
 	}
 };
 
 
 template class BitMatrix<1, MultipyPolicy>;
-using TestMatrix  = BitMatrix<1, MultipyPolicy>;
+template class BitMatrix<1, RiscVPolicy>;
+template class BitMatrix<2, RiscVPolicy>;
+//using TestMatrix  = BitMatrix<1, MultipyPolicy>;
+using TestMatrix = BitMatrix<2, RiscVPolicy>;
 
 
 #endif
